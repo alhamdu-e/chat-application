@@ -1,33 +1,14 @@
 const bcrypt = require("bcrypt");
-const databaseConnection = require("../utils/mongodbConnection");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-async function hashPassword(password) {
-	try {
-		const salt = await bcrypt.genSalt(10);
-		const hashedPassword = await bcrypt.hash(password, salt);
-		console.log(hashPassword, salt);
-		return hashedPassword;
-	} catch (err) {
-		console.log(err);
-	}
-}
-
-async function verifyPassword(password, storedHash) {
-	try {
-		const isMatch = await bcrypt.compare(inputPassword, storedHash);
-		return isMatch; // true if the password is correct, false otherwise
-	} catch (err) {
-		console.error("Error verifying password:", err);
-		throw err;
-	}
-}
 
 const registerUser = async (req, res) => {
 	const { firstName, lastName, username, email, password, profilePicture } =
 		req.body;
+	console.log(firstName, lastName, username, email, password, profilePicture);
 	try {
-		await databaseConnection();
-		const hashedPassword = await hashPassword(password);
+		const salt = await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(password, salt);
 		const user = new User({
 			firstName,
 			lastName,
@@ -37,21 +18,53 @@ const registerUser = async (req, res) => {
 			profilePicture,
 		});
 		await user.save();
+		res.status(201).json({ message: "User created successfully" });
 	} catch (err) {
-		console.log(err);
+		if (err.code == 11000) {
+			const field = Object.keys(err.keyPattern)[0];
+
+			res.status(400).json({ message: `${field} Already Exist` });
+		} else {
+			console.log(err);
+			res.status(500).json({ message: "Server Error" });
+		}
 	}
 };
-async function login() {
-	await databaseConnection();
+const login = async (req, res) => {
 	const { email, password } = req.body;
-	const user = await User.findOne({ email });
-	if (!user) {
-		return res.status(401).json({ message: "Invalid email or password" });
+	try {
+		const user = await User.findOne({ email });
+		if (!user) {
+			return res.status(401).json({ message: "Invalid email or password" });
+		}
+		const isPasswordValid = await bcrypt.compare(password, user.password);
+		if (!isPasswordValid) {
+			return res.status(401).json({ message: "Invalid credentila" });
+		}
+		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+		delete user.password;
+		res.status(200).json({ token, user });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
 	}
-	const isPasswordValid = await verifyPassword(password, user.password);
-	if (!isPasswordValid) {
-		return res.status(401).json({ message: "Invalid credentila" });
+};
+const addRemoveFriend = async (req, res) => {
+	try {
+		const { id, friendId } = req.params;
+		const user = await User.findById(id);
+		const freind = await User.findById(friendId);
+		if (user.friends.includes(friendId)) {
+			user.friends = user.friends.filter((id) => id !== friendId);
+			freind.friends = freind.friends.filter((id) => id !== id);
+		} else {
+			user.friends.push(friendId);
+			freind.friends.push(id);
+		}
+		await user.save();
+		await freind.save();
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: "somthing went wrong" });
 	}
-	res.status(200).json({ message: "login succesfully" });
-}
-module.exports = { registerUser, login };
+};
+module.exports = { registerUser, login, addRemoveFriend };

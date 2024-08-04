@@ -11,7 +11,7 @@ const chatSchema = new mongoose.Schema({
 		ref: "User",
 		required: true,
 	},
-	recipinet: {
+	recipient: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",
 	},
@@ -21,4 +21,4 @@ const chatSchema = new mongoose.Schema({
 	},
 });
 const Chat = mongoose.model("Chat", chatSchema);
-module.exports = chat;
+module.exports = Chat;
