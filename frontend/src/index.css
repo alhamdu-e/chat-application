@@ -18,10 +18,9 @@ body {
 		to right,
 		#ef32d9 0%,
 		#2c7cd8 51%,
-		#ef32d9 100%
+		#57a1e7 100%
 	);
 
-	padding: 15px 45px;
 	text-align: center;
 	text-transform: uppercase;
 	transition: 0.5s;
@@ -29,12 +28,19 @@ body {
 	color: white;
 	box-shadow: 0 0 6px #eee;
 	border-radius: 10px;
+	border: none;
 }
 
 .btn-grad:hover {
-	background-position: right center; /* change the direction of the change here */
+	background-image: linear-gradient(
+		to left,
+		#ef32d9 0%,
+		#c4b745 51%,
+		#d362c6 100%
+	);
 	color: #fff;
 	text-decoration: none;
+	background-clip: border-box;
 }
 
 .roboto-li {

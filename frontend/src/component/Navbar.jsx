@@ -4,7 +4,7 @@ function Navbar() {
 	const [showNavbar, setShowNavbar] = useState(false);
 
 	return (
-		<header className="bg-customBlue pr-5 pl-5 pt-3 pb-2  sm:flex justify-between items-center">
+		<header className="bg-customBlue pr-5 pl-5 pt-3 pb-2  sm:flex justify-between items-center border-b border-gray-600">
 			<div className="flex items-center justify-between pr-5 pl-5 pt-3 pb-2">
 				<div>
 					<img src="./images/m1.png" alt="" className="w-8" />
