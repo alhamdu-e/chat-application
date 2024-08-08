@@ -1,0 +1,148 @@
+/* Global styles */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+body {
+	font-family: "Rubik";
+}
+
+/* Tailwind CSS directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn-grad {
+	background-image: linear-gradient(
+		to right,
+		#ef32d9 0%,
+		#2c7cd8 51%,
+		#ef32d9 100%
+	);
+
+	padding: 15px 45px;
+	text-align: center;
+	text-transform: uppercase;
+	transition: 0.5s;
+	background-size: 200% auto;
+	color: white;
+	box-shadow: 0 0 6px #eee;
+	border-radius: 10px;
+}
+
+.btn-grad:hover {
+	background-position: right center; /* change the direction of the change here */
+	color: #fff;
+	text-decoration: none;
+}
+
+.roboto-li {
+	font-family: "Roboto", sans-serif;
+	font-weight: 300;
+	font-style: normal;
+}
+
+.roboto-r {
+	font-family: "Roboto", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
+.roboto-m {
+	font-family: "Roboto", sans-serif;
+	font-weight: 500;
+	font-style: normal;
+}
+
+.roboto-l {
+	font-family: "Roboto", sans-serif;
+	font-weight: 700;
+	font-style: normal;
+}
+
+.roboto-ex {
+	font-family: "Roboto";
+	font-weight: 900;
+	font-style: normal;
+}
+
+.rubik-li {
+	font-family: "Rubik", sans-serif;
+	font-optical-sizing: auto;
+
+	font-weight: 300;
+	font-style: normal;
+}
+
+.rubik-r {
+	font-family: "Rubik", sans-serif;
+	font-optical-sizing: auto;
+
+	font-weight: 400;
+	font-style: normal;
+}
+
+.rubik-m {
+	font-family: "Rubik", sans-serif;
+	font-optical-sizing: auto;
+
+	font-weight: 500;
+	font-style: normal;
+}
+
+.rubik-l {
+	font-family: "Rubik", sans-serif;
+	font-optical-sizing: auto;
+
+	font-weight: 700;
+	font-style: normal;
+}
+
+.rubik-ex {
+	font-family: "Rubik";
+	font-optical-sizing: auto;
+
+	font-weight: 900;
+	font-style: normal;
+}
+
+.inter-li {
+	font-family: "Inter", sans-serif;
+	font-optical-sizing: auto;
+
+	font-weight: 300;
+	font-style: normal;
+}
+
+.inter-r {
+	font-family: "Inter", sans-serif;
+	font-optical-sizing: auto;
+
+	font-weight: 400;
+	font-style: normal;
+}
+
+.inter-m {
+	font-family: "Inter", sans-serif;
+	font-optical-sizing: auto;
+
+	font-weight: 500;
+	font-style: normal;
+}
+
+.inter-l {
+	font-family: "Inter", sans-serif;
+	font-optical-sizing: auto;
+
+	font-weight: 700;
+	font-style: normal;
+}
+
+.inter-ex {
+	font-family: "Inter";
+	font-optical-sizing: auto;
+
+	font-weight: 900;
+	font-style: normal;
+}
