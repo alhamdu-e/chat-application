@@ -34,7 +34,7 @@ function Navbar() {
 			<div
 				className={`${
 					showNavbar ? "block" : "hidden"
-				} sm:block flex items-center justify-around`}>
+				} sm:block flex items-center justify-around md:mr-7`}>
 				<div>
 					<a
 						href="#home"
