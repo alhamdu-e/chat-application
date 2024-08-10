@@ -1,6 +1,6 @@
 function ToAction() {
 	return (
-		<div className="px-10 pb-24 bg-customBlue">
+		<div className="px-10 pb-2 bg-customBlue">
 			<div
 				// style={{
 				// 	backgroundImage: `linear-gradient(90deg, rgba(15,6,62,0.9) 0%, rgba(20,13,32,0.9) 0%), url('/images/2.jpg')`,
