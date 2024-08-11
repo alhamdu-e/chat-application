@@ -4,51 +4,51 @@ import { LuInstagram } from "react-icons/lu";
 import { FaFacebook } from "react-icons/fa";
 
 function Footer() {
+	const date = new Date().getFullYear();
 	return (
-		<div className="bg-slate-900  grid grid-cols-1 px-12 gap-3 pt-16 sm:grid-cols-3 pb-10 justify-center items-center">
-			<div className="text-md font-thin text-slate-200 flex justify-between mr-10">
-				<p>
-					<FaTiktok className="inline" />{" "}
-					<span className="hidden sm:inline">Twiter</span>
-				</p>
-				<p>
-					{" "}
-					<FaTwitter className="inline" />
-					<span className="hidden sm:inline">Twiter</span>
-				</p>
-				<p>
-					{" "}
-					<FaFacebook className="inline" />{" "}
-					<span className="hidden  sm:inline">FaceBook</span>
-				</p>
-				<p>
-					<LuInstagram className="inline" />{" "}
-					<span className=" hidden sm:inline">Instagram</span>
-				</p>
-			</div>
+		<div
+			className="bg-slate-900 pb-4 pt-40"
+			style={{
+				clipPath:
+					"polygon(0 30%, 100% 4%, 100% 16%, 100% 98%, 25% 100%, 0 100%, 0 0)",
+			}}>
+			<div className="bg-slate-900  pt-10 pb-10  pl-10 pr-10 grid sm:grid-cols-2 sm:pl-0 ">
+				<div className="text-sm font-thin text-gray-300 flex justify-evenly mb-7  ">
+					<p className="text-2xl md:text-xl">
+						<FaTiktok className="inline" />{" "}
+						<span className=" hidden lg:inline">Twiter</span>
+					</p>
+					<p className="text-2xl md:text-xl">
+						{" "}
+						<FaTwitter className="inline" />
+						<span className=" hidden lg:inline">Twiter</span>
+					</p>
+					<p className="text-2xl md:text-xl">
+						{" "}
+						<FaFacebook className="inline" />{" "}
+						<span className=" hidden lg:inline">FaceBook</span>
+					</p>
+					<p className="text-2xl md:text-xl">
+						<LuInstagram className="inline" />{" "}
+						<span className=" hidden lg:inline">Instagram</span>
+					</p>
+				</div>
 
-			{/* <div className="text-sm font-thin text-slate-200">
-				<p>
-					<FaPhoneAlt className="inline" /> +251964676678
+				<div className="flex flex-col sm:flex-row sm:ml-5  md:justify-between lg:justify-around ">
+					<input
+						type="email"
+						className="border-none focus:border-none bg-gray-400 outline-none  outline-offset-0  rounded-md mb-5 py-2 sm:w-full "
+						style={{ boxShadow: "0 0 0 0.4rem rgba(253, 249, 233, 0.5)" }}
+					/>
+					<button className="bg-slate-400 rounded-xl py-2 sm:px-3 sm:py-[13px] sm:ml-6 lg:px-5   sm:-mt-2 sm:self-center">
+						Subscribe
+					</button>
+				</div>
+			</div>
+			<div className="text-center">
+				<p className="text-gray-300 font-thin text-sm ">
+					Copyright &copy;{date} by Alhamdu Bedewe.All right Reserved{" "}
 				</p>
-				<p className="text-sm font-thin">
-					{" "}
-					<IoLocationSharp className="inline" /> Addis Abeba,Ethiopia
-				</p>
-				<p>
-					{" "}
-					<MdOutlineMail className="inline" /> alhamdu7624@gmail.com
-				</p>
-			</div> */}
-			<div className="flex items-center flex-col sm:flex-row">
-				<input
-					type="email"
-					className="border-none focus:border-none bg-gray-400 outline-none  outline-offset-0  rounded-md "
-					style={{ boxShadow: "0 0 0 0.4rem rgba(253, 249, 233, 0.5)" }}
-				/>
-				<button className="ml-5 bg-slate-300 px-6 py-2 rounded-xl mt-4 sm:mt-0 ">
-					Subscribe
-				</button>
 			</div>
 		</div>
 	);
