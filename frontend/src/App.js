@@ -3,6 +3,7 @@ import Hero from "./component/Hero";
 import FeatureSEction from "./component/FeatureSEction";
 import ToAction from "./component/ToAction";
 import Testomoni from "./component/Testomoni";
+import Footer from "./component/Footer";
 function App() {
 	return (
 		<div>
@@ -11,6 +12,7 @@ function App() {
 			<FeatureSEction />
 			<ToAction />
 			<Testomoni />
+			<Footer />
 		</div>
 	);
 }
