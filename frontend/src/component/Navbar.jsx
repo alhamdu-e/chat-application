@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Navbar() {
 	const [showNavbar, setShowNavbar] = useState(false);
@@ -41,11 +42,11 @@ function Navbar() {
 						className="inline-block text-white hover:bg-gray-700 rounded px-4">
 						Home
 					</a>
-					<a
-						href="#home"
+					<Link
+						to="login"
 						className="inline-block text-white hover:bg-gray-700 rounded px-4 mt-1">
 						Login
-					</a>
+					</Link>
 					<a
 						href="#home"
 						className="inline-block text-white hover:bg-gray-700 rounded px-4 mt-1">
