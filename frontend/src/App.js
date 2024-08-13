@@ -7,6 +7,7 @@ import ToAction from "./component/ToAction";
 import Testomoni from "./component/Testomoni";
 import Footer from "./component/Footer";
 import Login from "./component/Login";
+import Register from "./component/Register";
 function App() {
 	return (
 		<BrowserRouter>
@@ -20,10 +21,12 @@ function App() {
 							<FeatureSEction />
 							<ToAction />
 							<Testomoni />
+
 							<Footer />
 						</div>
 					}></Route>
 				<Route path="login" element={<Login />}></Route>
+				<Route path="register" element={<Register />}></Route>
 			</Routes>
 		</BrowserRouter>
 	);

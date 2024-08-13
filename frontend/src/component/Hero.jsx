@@ -1,3 +1,7 @@
+import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+
 function Hero() {
 	return (
 		<div className="bg-customBlue  pt-12 text-center pr-5 pl-5 lg:pt-20 pb-32">
@@ -20,9 +24,24 @@ function Hero() {
 					</button>
 				</div>
 			</div>
-			<div className="grid  grid-cols-1 md:grid-cols-2">
-				<img src="./images/im4.png" alt="" className="w-full" />
-				<img src="./images/im8.png" alt="" className="w-full  opacity-90" />
+			<div className="grid  grid-cols-1 md:grid-cols-2 mt-16">
+				<LazyLoadImage
+					src="./images/im4.png"
+					alt="logo"
+					effect="blur"
+					width={"100%"}
+					placeholderSrc="./images/im5.png"
+					delayTime={1000}
+				/>
+				<LazyLoadImage
+					src="./images/im8.png"
+					alt="logo"
+					className=" opacity-90"
+					width={"100%"}
+					effect="blur"
+					delayTime={1000}
+					placeholderSrc="./images/im7.png"
+				/>
 			</div>
 		</div>
 	);

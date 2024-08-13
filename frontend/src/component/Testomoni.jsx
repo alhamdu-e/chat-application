@@ -6,7 +6,13 @@ function Testomoni() {
 	return (
 		<div>
 			{/* <Slider {...settings}> */}
-			<Carousel {...{ autoPlay: true, interval: 1000, infiniteLoop: true }}>
+			<Carousel
+				{...{
+					autoPlay: true,
+					interval: 1000,
+					infiniteLoop: true,
+					showThumbs: false,
+				}}>
 				<div
 					className="bg-slate-900 mx-5 sm:mx-14 md:mx-28 mb-32 px-7 py-14 rounded-[22px] "
 					style={{
