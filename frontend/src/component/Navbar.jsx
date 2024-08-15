@@ -47,11 +47,11 @@ function Navbar() {
 						className="inline-block text-white hover:bg-gray-700 rounded px-4 mt-1">
 						Login
 					</Link>
-					<a
-						href="#home"
+					<Link
+						to="/dashboard"
 						className="inline-block text-white hover:bg-gray-700 rounded px-4 mt-1">
-						Blog
-					</a>
+						Dashboard
+					</Link>
 				</div>
 			</div>
 		</header>
