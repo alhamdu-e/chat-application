@@ -23,17 +23,17 @@ function ChatUi() {
 						</div>
 						<div>
 							<Link to="/" className="text-gray-300">
-								<IoMdHome className="text-3xl text-slate-300" />
+								<IoMdHome className="text-3xl text-slate-300 border-b-transparent border-b-4 rounded-sm border-solid hover:border-orange-400 transition-colors duration-300 ease-in-out " />
 							</Link>
 						</div>
 						<div>
 							<Link className="text-gray-300">
-								<IoIosPerson className="text-3xl text-slate-300 border border-solid" />
+								<IoIosPerson className="text-3xl text-slate-300   border-b-4 rounded-sm border-solid border-orange-400" />
 							</Link>
 						</div>
 						<div>
 							<IoMdAdd
-								className="text-3xl text-slate-300"
+								className="text-3xl text-slate-300 border-b-transparent border-b-4 rounded-sm border-solid hover:border-orange-400 transition-colors duration-300 ease-in-out cursor-pointer"
 								onClick={() => setShowAddUser(!showAddUser)}
 							/>
 						</div>
