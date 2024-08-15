@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { IoMdHome } from "react-icons/io";
 import { IoIosPerson } from "react-icons/io";
 import { IoMdAdd } from "react-icons/io";
-import { IoSearch } from "react-icons/io5";
+// import { IoSearch } from "react-icons/io5";
 import { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 
