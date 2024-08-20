@@ -3,6 +3,6 @@ const router = express.Router();
 const chat = require("../controllers/chatController.js");
 
 router.post("/newchat", chat.insertChat);
-router.post("/chathistory", chat.getChatHistory);
+router.get("/chathistory", chat.getChatHistory);
 
 module.exports = router;

@@ -4,6 +4,8 @@ const io = require("../socket.js");
 
 const insertChat = async (req, res) => {
 	const { senderId, receiverId, message } = req.body;
+	console.log(senderId, receiverId, message);
+
 	try {
 		const chat = new Chat({
 			message: message,
@@ -15,7 +17,14 @@ const insertChat = async (req, res) => {
 		await User.findByIdAndUpdate(receiverId, { $push: { chats: chat._id } });
 		await chat.save();
 
-		io.getIO().emit("newChat", {
+		io.getIo().to(receiverId).emit("newChat", {
+			message: message,
+			sender: senderId,
+			recipient: receiverId,
+		});
+
+		// Optionally emit the message to the sender (for confirmation)
+		io.getIo().to(senderId).emit("newChat", {
 			message: message,
 			sender: senderId,
 			recipient: receiverId,
@@ -28,20 +37,22 @@ const insertChat = async (req, res) => {
 };
 
 const getChatHistory = async (req, res) => {
-	const { userId, contacId } = req.body;
+	const { userId, freindId } = req.query;
+	console.log(userId, freindId);
 	try {
 		const chatHistory = await Chat.find({
 			$or: [
 				{
 					sender: userId,
-					recipient: frendiId,
+					recipient: freindId,
 				},
 				{
-					recipient: frendiId,
-					sender: userId,
+					recipient: userId,
+					sender: freindId,
 				},
 			],
-		}).sort({ timestamp: 1 });
+		});
+		console.log(chatHistory, "chat");
 		res.status(200).json(chatHistory);
 	} catch (err) {
 		console.log(err);

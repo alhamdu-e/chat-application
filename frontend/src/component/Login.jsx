@@ -1,6 +1,24 @@
+import axios from "axios";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+	const { register, handleSubmit } = useForm();
+	const navigate = useNavigate();
+	const onSubmit = async (data) => {
+		try {
+			const response = await axios.post("http://localhost:5000/login", {
+				email: data.email,
+				password: data.password,
+			});
+
+			localStorage.setItem("user", JSON.stringify(response.data.user));
+			navigate("/dashboard");
+		} catch (error) {
+			console.log(error);
+		}
+	};
 	return (
 		<section className="bg-slate-900 dark:bg-gray-900 h-screen">
 			<div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -9,7 +27,9 @@ function Login() {
 						<h1 className="text-xl leading-tight tracking-tight text-gray-300 font-normal md:text-2xl dark:text-white">
 							Login to your account
 						</h1>
-						<form className="space-y-4 md:space-y-6" action="#">
+						<form
+							className="space-y-4 md:space-y-6"
+							onSubmit={handleSubmit(onSubmit)}>
 							<div>
 								<label
 									htmlFor="email"
@@ -22,7 +42,7 @@ function Login() {
 									id="email"
 									className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-orange-200"
 									placeholder="name@company.com"
-									required=""
+									{...register("email")}
 								/>
 							</div>
 							<div>
@@ -36,8 +56,8 @@ function Login() {
 									name="password"
 									id="password"
 									placeholder="••••••••"
+									{...register("password")}
 									className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-orange-200"
-									required=""
 								/>
 							</div>
 
