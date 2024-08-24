@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { io } from "socket.io-client";
 import { Link } from "react-router-dom";
 import { IoMdHome } from "react-icons/io";
