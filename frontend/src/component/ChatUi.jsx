@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import { IoMdHome } from "react-icons/io";
 import { IoIosPerson } from "react-icons/io";
 import { IoMdAdd } from "react-icons/io";
-import { IoSend } from "react-icons/io5";
-import { MdAttachFile } from "react-icons/md";
 import { useState } from "react";
 import Frinds from "./Frinds";
 import AddUser from "./AddUser";
@@ -19,20 +17,44 @@ function ChatUi() {
 	const [showChatPageSm, setShowChatPage] = useState(false);
 	const [selectedFriend, SetSelectdFriedn] = useState([]);
 	const [reciverId, setReciverId] = useState("");
-	const [message, setMessage] = useState("hi message");
+	const [message, setMessage] = useState("");
 	const [chatHistory, SetChatHistory] = useState([]);
+	const [lastMessage, setLastMessage] = useState([]);
+	const [files, setFiles] = useState({});
+	const [imagePreview, setImagePreview] = useState(null);
+	const [caption, setCaption] = useState("");
 
 	const user = JSON.parse(localStorage.getItem("user"));
 
-	const messagesEndRef = useRef(null);
-
-	const scrollToBottom = () => {
-		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	const handleFile = (e) => {
+		const file = e.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			setFiles(file);
+			reader.onloadend = () => {
+				setImagePreview(reader.result);
+			};
+			reader.readAsDataURL(file);
+		}
 	};
-
 	useEffect(() => {
-		scrollToBottom();
-	}, [chatHistory]);
+		async function retriveLastMessage() {
+			try {
+				const response = await axios.get(
+					"http://127.0.0.1:5000/chat/lastmessage",
+					{
+						params: {
+							userId: user._id,
+						},
+					}
+				);
+				setLastMessage(response.data);
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		retriveLastMessage();
+	}, [user._id, chatHistory]);
 
 	useEffect(() => {
 		const socket = io("http://127.0.0.1:5000");
@@ -63,7 +85,6 @@ function ChatUi() {
 					},
 				}
 			);
-			console.log(response.data);
 			SetChatHistory(response.data);
 		} catch (error) {
 			console.log(error);
@@ -71,12 +92,25 @@ function ChatUi() {
 	};
 
 	const insertChat = async () => {
+		if (message) {
+			setFiles({});
+		}
 		try {
-			await axios.post("http://127.0.0.1:5000/chat/newchat", {
-				senderId: user._id,
-				receiverId: reciverId,
-				message: message,
-			});
+			console.log(message);
+			const foramtData = new FormData();
+			if (message.length > 0) {
+				foramtData.append("message", message);
+			} else {
+				foramtData.append("files", files);
+				foramtData.append("caption", caption);
+			}
+
+			foramtData.append("receiverId", reciverId);
+			foramtData.append("senderId", user._id);
+			await axios.post("http://127.0.0.1:5000/chat/newchat", foramtData);
+			setFiles("");
+			setMessage("");
+			setImagePreview("");
 		} catch (error) {
 			console.log(error);
 		}
@@ -112,8 +146,25 @@ function ChatUi() {
 		setReciverId(dataFilterd[0]._id);
 		SetSelectdFriedn(dataFilterd);
 	};
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth > 640) {
+				setShowChatPage(false);
+			} else {
+				setShowChatPage(true);
+			}
+		};
+
+		handleResize();
+
+		window.addEventListener("resize", handleResize);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
 	return (
-		<div className="bg-slate-900 h-screen sm:grid grid-cols-4 ">
+		<div className="bg-slate-900 h-screen sm:grid grid-cols-4">
 			{!showAddUser && !showChatPageSm && (
 				<div className="lg:col-span-1 sm:col-span-2  h-screen overflow-y-scroll">
 					<div className="w-full sm:w-[48.9vw] lg:w-[24.60vw] border-b border-gray-700 border-solid flex items-center justify-around pt-3 pb-3 bg-slate-900 fixed ">
@@ -158,6 +209,8 @@ function ChatUi() {
 						selectFriend={selectFriend}
 						getChatHistory={getChatHistory}
 						setShowChatPage={setShowChatPage}
+						lastMessage={lastMessage}
+						message={message}
 					/>
 				</div>
 			)}
@@ -178,6 +231,9 @@ function ChatUi() {
 					selectedFriend={selectedFriend}
 					chatHistory={chatHistory}
 					getChatHistory={getChatHistory}
+					setMessage={setMessage}
+					message={message}
+					insertChat={insertChat}
 				/>
 			)}
 
@@ -215,25 +271,51 @@ function ChatUi() {
 						</p>
 					</div>
 				)}
-				<Chat chatHistory={chatHistory} selectedFriend={selectedFriend} />
-
-				<div className="bg-slate-800 fixed h-12 bottom-0 w pl-4 pr-5 flex right-0  sm:w-[50vw] lg:w-[75vw]">
-					<button className="text-2xl  text-orange-100">
-						<MdAttachFile />
-					</button>
-
-					<input
-						autoFocus
-						type="text"
-						placeholder="Write Messege"
-						className="bg-slate-800  border-transparent outline-none px-1 w-[90%] py-2 text-slate-100 font-thin"
-					/>
-
-					<button className=" text-2xl text-orange-100" onClick={insertChat}>
-						<IoSend />
-					</button>
-				</div>
+				<Chat
+					chatHistory={chatHistory}
+					selectedFriend={selectedFriend}
+					setMessage={setMessage}
+					message={message}
+					insertChat={insertChat}
+					handleFile={handleFile}
+				/>
 			</div>
+			{imagePreview && (
+				<div className="fixed right-0 left-0 top-0 bottom-0">
+					<div className="  fixed w-[70vw]  sm:w-[50vw]  lg:w-[400px]  left-0 right-0  top-16 bg-slate-800   p-5 rounded-xl mx-auto ">
+						<img
+							src={imagePreview}
+							alt="hello"
+							className="max-w-full  max-h-[50vh] object-contain mb-2 rounded-2xl"
+						/>
+						<input type="checkbox" id="check" />{" "}
+						<label htmlFor="check" className="text-orange-200">
+							{" "}
+							Add Caption
+						</label>
+						<input
+							autoFocus
+							onChange={(e) => setCaption(e.target.value)}
+							type="text"
+							value={caption}
+							placeholder="write caption"
+							className="bg-slate-800  mb-2 w-full  border-transparent outline-none px-1  py-2 text-slate-100 font-thin border-b border-slate-300 "
+						/>
+						<div className="flex justify-start">
+							<button
+								className="text-orange-100 bg-green-800 py-1 px-2 rounded-lg "
+								onClick={insertChat}>
+								send{" "}
+							</button>
+							<button
+								className="text-orange-100 bg-red-400 py-1 px-2 rounded-lg ml-3"
+								onClick={() => setImagePreview(null)}>
+								Cancel{" "}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

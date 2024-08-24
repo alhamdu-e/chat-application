@@ -5,7 +5,21 @@ function Frinds({
 	selectFriend,
 	getChatHistory,
 	setShowChatPage,
+	lastMessage,
 }) {
+	function TruncatText(message) {
+		if (message?.length <= 20) {
+			return message;
+		}
+		let truncateMessage = message?.substring(0, 30);
+		const lastindexof = truncateMessage?.lastIndexOf(" ");
+		console.log(lastindexof);
+		if (lastindexof > 0) {
+			truncateMessage = truncateMessage?.substring(0, lastindexof);
+		}
+		return truncateMessage + "...";
+	}
+
 	return (
 		<div className="pt-24">
 			{isLoading && (
@@ -20,35 +34,43 @@ function Frinds({
 			)}
 			{!isLoading &&
 				!isError &&
-				data.map((friend) => (
-					<div
-						className="flex items-center justify-start ml-2 pt-5 pb-5 pl-2 hover:bg-slate-800 rounded-lg cursor-pointer"
-						onClick={() => {
-							selectFriend(friend._id);
-							getChatHistory(friend._id);
-							if (window.innerWidth < 640) {
-								setShowChatPage(true);
-							}
-						}}>
-						<img
-							src={friend.profilePicture}
-							alt=""
-							className="w-10  rounded-[100px]  "
-						/>
-						<div className="ml-2 flex justify-between w-full mr-4">
-							<div>
-								<h2 className="text-[#ccd1c8]  font-thin text-sm">
-									{friend.fullName}
-								</h2>
-								<p className="text-gray-400 font-thin text-xs">
-									{friend.chats.length > 0 ? "" : "Start Messging"}
-								</p>
-							</div>
+				data.map((friend) => {
+					// Find the last message for the current friend
+					const messageData = lastMessage.find(
+						(mes) => mes.friendId === friend._id
+					);
 
-							{/* <p className="text-gray-300 font-thin text-xs">5:30 PM</p> */}
+					return (
+						<div
+							key={friend._id}
+							className="flex items-center justify-start ml-2 pt-5 pb-5 pl-2 hover:bg-slate-800 rounded-lg cursor-pointer"
+							onClick={() => {
+								selectFriend(friend._id);
+								getChatHistory(friend._id);
+								if (window.innerWidth < 640) {
+									setShowChatPage(true);
+								}
+							}}>
+							<img
+								src={friend.profilePicture}
+								alt=""
+								className="w-10 rounded-[100px]"
+							/>
+							<div className="ml-2 flex justify-between w-full mr-4">
+								<div>
+									<h2 className="text-[#ccd1c8] font-thin text-sm">
+										{friend.fullName}
+									</h2>
+									<p className="text-gray-400 font-thin text-xs">
+										{TruncatText(messageData?.lastMessage)}
+									</p>
+								</div>
+
+								{/* <p className="text-gray-300 font-thin text-xs">5:30 PM</p> */}
+							</div>
 						</div>
-					</div>
-				))}
+					);
+				})}
 			{isError && (
 				<div className="pt-12 text-slate-300">
 					<p>Oops! Something went wrong. Try again.</p>

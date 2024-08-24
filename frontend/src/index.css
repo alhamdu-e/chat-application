@@ -238,3 +238,7 @@ body {
 		transform: rotate(360deg);
 	}
 }
+
+.epr-category-nav {
+	display: none !important;
+}
