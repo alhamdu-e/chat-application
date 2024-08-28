@@ -1,29 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoArrowBackOutline } from "react-icons/io5";
 import axios from "axios";
+import { useState } from "react";
 
 function AddUser({ setShowAddUser, showAddUser, addFriendAndRemoveFriend }) {
+	const [search, setSearch] = useState("");
 	const queryClient = useQueryClient();
 	const user = JSON.parse(localStorage.getItem("user"));
 
-	// Fetch non-friend users
 	const getNonFriend = async () => {
 		const { data } = await axios.get(`user/${user._id}`);
 		return data;
 	};
 
-	// Using useQuery to fetch data
 	const { data, isLoading, isError } = useQuery({
 		queryKey: ["nonFriend"],
 		queryFn: getNonFriend,
 	});
-
-	// Mutation for adding and removing friends
+	const filteredUsers = data?.filter((user) =>
+		user.fullName.toLowerCase().includes(search.toLowerCase())
+	);
 	const { mutate, isLoading: isAdding } = useMutation({
 		mutationFn: ({ userId, friendId }) =>
 			addFriendAndRemoveFriend(userId, friendId),
 		onSuccess: () => {
-			// Invalidate the query to refetch data
 			queryClient.invalidateQueries({ queryKey: ["nonFriend"] });
 			queryClient.invalidateQueries({ queryKey: ["friends"] });
 		},
@@ -36,6 +36,8 @@ function AddUser({ setShowAddUser, showAddUser, addFriendAndRemoveFriend }) {
 					onClick={() => setShowAddUser(!showAddUser)}
 				/>
 				<input
+					onChange={(e) => setSearch(e.target.value)}
+					value={search}
 					type="text"
 					placeholder="Start typing"
 					className="focus:border-none focus:outline-none px-2 py-1 rounded-lg w-full ml-6 mr-8 bg-orange-100"
@@ -55,13 +57,15 @@ function AddUser({ setShowAddUser, showAddUser, addFriendAndRemoveFriend }) {
 				)}
 				{!isLoading &&
 					!isError &&
-					data.map((users) => (
+					filteredUsers.map((users) => (
 						<div
 							key={users._id}
 							className="flex items-center justify-start ml-2 pt-5">
 							<img
 								src={
-									users.profilePicture ? users.profilePicture : "./avater.svg"
+									users.profilePicture
+										? users.profilePicture
+										: "./images/avater.svg"
 								}
 								alt=""
 								className="w-10 rounded-[100px]"

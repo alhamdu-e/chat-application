@@ -1,3 +1,4 @@
+import { FormateDate } from "./dateFormater";
 function Frinds({
 	data,
 	isLoading,
@@ -6,6 +7,7 @@ function Frinds({
 	getChatHistory,
 	setShowChatPage,
 	lastMessage,
+	setIsClicked,
 }) {
 	function TruncatText(message) {
 		if (message?.length <= 20) {
@@ -13,7 +15,6 @@ function Frinds({
 		}
 		let truncateMessage = message?.substring(0, 30);
 		const lastindexof = truncateMessage?.lastIndexOf(" ");
-		console.log(lastindexof);
 		if (lastindexof > 0) {
 			truncateMessage = truncateMessage?.substring(0, lastindexof);
 		}
@@ -50,9 +51,14 @@ function Frinds({
 								if (window.innerWidth < 640) {
 									setShowChatPage(true);
 								}
+								setIsClicked(true);
 							}}>
 							<img
-								src={friend.profilePicture}
+								src={
+									friend.profilePicture
+										? friend.profilePicture
+										: "./images/avater.svg"
+								}
 								alt=""
 								className="w-10 rounded-[100px]"
 							/>
@@ -61,12 +67,31 @@ function Frinds({
 									<h2 className="text-[#ccd1c8] font-thin text-sm">
 										{friend.fullName}
 									</h2>
-									<p className="text-gray-400 font-thin text-xs">
-										{TruncatText(messageData?.lastMessage)}
-									</p>
+									{messageData?.isImage ? (
+										<>
+											<img
+												src={messageData.lastMessage}
+												className="w-10 inline mt-1"
+												alt="ptofile "
+											/>{" "}
+											<span className="text-gray-400 font-thin text-xs">
+												Photo
+											</span>
+										</>
+									) : (
+										<p className="text-gray-400 font-thin text-xs">
+											{messageData?.lastMessage
+												? TruncatText(messageData?.lastMessage)
+												: "no message yet"}
+										</p>
+									)}
 								</div>
 
-								{/* <p className="text-gray-300 font-thin text-xs">5:30 PM</p> */}
+								{messageData?.lastMessageTime && (
+									<p className="text-gray-300 font-thin text-xs">
+										{FormateDate(messageData.lastMessageTime)}
+									</p>
+								)}
 							</div>
 						</div>
 					);

@@ -2,9 +2,13 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 function Login() {
-	const { register, handleSubmit } = useForm();
+	const {
+		register,
+		handleSubmit,
+		formState: { isSubmitting },
+	} = useForm();
 	const navigate = useNavigate();
 	const onSubmit = async (data) => {
 		try {
@@ -16,9 +20,22 @@ function Login() {
 			localStorage.setItem("user", JSON.stringify(response.data.user));
 			navigate("/dashboard");
 		} catch (error) {
-			console.log(error);
+			if (error.response?.data) {
+				toast.error(error.response.data.message, {
+					position: "top-center",
+					theme: "colored",
+					autoClose: 2000,
+				});
+			} else {
+				toast.error(error.message + ".Please Try Again", {
+					position: "top-center",
+					theme: "colored",
+					autoClose: 2000,
+				});
+			}
 		}
 	};
+
 	return (
 		<section className="bg-slate-900 dark:bg-gray-900 h-screen">
 			<div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -86,8 +103,46 @@ function Login() {
 
 							<button
 								type="submit"
-								className="w-full text-white bg-slate-600 hover:bg-slate-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-								Login
+								disabled={isSubmitting}
+								className={`${
+									isSubmitting ? "cursor-not-allowed" : ""
+								}   w-full   text-white bg-slate-600 hover:bg-slate-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800`}>
+								{isSubmitting ? (
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 100 100"
+										preserveAspectRatio="xMidYMid"
+										width="30"
+										height="30"
+										style={{
+											display: "block",
+											backgroundColor: "transparent",
+											shapeRendering: "auto",
+											marginLeft: "150px",
+										}}>
+										<g>
+											<circle
+												strokeDasharray="164.93361431346415 56.97787143782138"
+												r="35"
+												strokeWidth="10"
+												stroke="#e8d6d7"
+												fill="none"
+												cy="50"
+												cx="50">
+												<animateTransform
+													attributeName="transform"
+													type="rotate"
+													values="0 50 50;360 50 50"
+													keyTimes="0;1"
+													dur="1s"
+													repeatCount="indefinite"
+												/>
+											</circle>
+										</g>
+									</svg>
+								) : (
+									"Login"
+								)}
 							</button>
 							<p className="text-sm text-gray-300 font-thin dark:text-gray-400">
 								Don't have an account?{" "}

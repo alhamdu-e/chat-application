@@ -17,5 +17,6 @@ const uploads = multer({ storage: storage });
 router.post("/newchat", uploads.single("files"), chat.insertChat);
 router.get("/chathistory", chat.getChatHistory);
 router.get("/lastmessage", chat.getUsersWithLastMessage);
+router.delete("/deletechat/:chatID", chat.deleteChat);
 
 module.exports = router;

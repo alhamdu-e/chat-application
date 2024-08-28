@@ -16,13 +16,19 @@ export const onSubmit = async (data, navigate) => {
 		);
 		toast.success(response.data.message, {
 			position: "top-center",
-			// onClose: () => navigate("/"),
+			onClose: () => navigate("/"),
 		});
 	} catch (error) {
-		toast.error(error.response.data.message, {
-			position: "top-center",
-			theme: "colored",
-			// onClose: () => navigate("/"),
-		});
+		if (error.response?.data) {
+			toast.error(error.response.data.message, {
+				position: "top-center",
+				theme: "colored",
+			});
+		} else {
+			toast.error(error.message + ".Please Try Again", {
+				position: "top-center",
+				theme: "colored",
+			});
+		}
 	}
 };

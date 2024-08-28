@@ -8,6 +8,9 @@ function ChatUiSm({
 	setMessage,
 	insertChat,
 	message,
+	showModal,
+	setShowModal,
+	setChatId,
 }) {
 	return (
 		<div className="bg-slate-950 lg:col-span-1 sm:col-span-2  h-screen overflow-y-scroll sm:hidden">
@@ -50,6 +53,9 @@ function ChatUiSm({
 				setMessage={setMessage}
 				message={message}
 				insertChat={insertChat}
+				showModal={showModal}
+				setShowModal={setShowModal}
+				setChatId={setChatId}
 			/>
 		</div>
 	);

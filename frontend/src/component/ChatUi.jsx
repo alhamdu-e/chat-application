@@ -9,8 +9,11 @@ import Frinds from "./Frinds";
 import AddUser from "./AddUser";
 import ChatUiSm from "./ChatUiSm";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Chat from "./Chat";
+import EmojiPicker from "emoji-picker-react";
+import { MdOutlineEmojiEmotions } from "react-icons/md";
+import { toast } from "react-toastify";
 
 function ChatUi() {
 	const [showAddUser, setShowAddUser] = useState(false);
@@ -23,8 +26,15 @@ function ChatUi() {
 	const [files, setFiles] = useState({});
 	const [imagePreview, setImagePreview] = useState(null);
 	const [caption, setCaption] = useState("");
-
+	const [isClicked, setIsClicked] = useState(false);
+	const [iSchecked, setIsChecked] = useState(false);
+	const [picker, setPicker] = useState(false);
+	const queryClient = useQueryClient();
 	const user = JSON.parse(localStorage.getItem("user"));
+	const [onLineUser, setOnlineUser] = useState([]);
+	const [isOnline, setIsOnline] = useState(false);
+	const [showModal, setShowModal] = useState(false);
+	const [chatId, setChatId] = useState("");
 
 	const handleFile = (e) => {
 		const file = e.target.files[0];
@@ -36,6 +46,11 @@ function ChatUi() {
 			};
 			reader.readAsDataURL(file);
 		}
+	};
+
+	const onEmojiClick = (emojiObject) => {
+		setCaption((prevInput) => prevInput + emojiObject.emoji);
+		setPicker(false);
 	};
 	useEffect(() => {
 		async function retriveLastMessage() {
@@ -49,20 +64,26 @@ function ChatUi() {
 					}
 				);
 				setLastMessage(response.data);
-			} catch (error) {
-				console.log(error);
-			}
+			} catch (error) {}
 		}
 		retriveLastMessage();
 	}, [user._id, chatHistory]);
 
 	useEffect(() => {
 		const socket = io("http://127.0.0.1:5000");
-
 		socket.on("connect", () => {
 			socket.emit("joinRoom", user._id);
 		});
+		socket.on("userOnline", ({ userId }) => {
+			if (!onLineUser.includes(userId)) {
+				setOnlineUser((prv) => [...prv, userId]);
+			}
+		});
+		socket.on("userOffline", ({ userId }) => {
+			setOnlineUser((prv) => prv.filter((userid) => userid !== userId));
+		});
 		socket.on("newChat", (data) => {
+			console.log(data);
 			SetChatHistory((prev) => [...prev, data]);
 		});
 		socket.on("disconnect", () => {
@@ -71,10 +92,9 @@ function ChatUi() {
 		return () => {
 			socket.disconnect();
 		};
-	}, [user._id]);
+	}, [user._id, onLineUser]);
 
 	const getChatHistory = async (friendid) => {
-		console.log(friendid, user._id);
 		try {
 			const response = await axios.get(
 				"http://127.0.0.1:5000/chat/chathistory",
@@ -87,16 +107,29 @@ function ChatUi() {
 			);
 			SetChatHistory(response.data);
 		} catch (error) {
-			console.log(error);
+			throw error;
 		}
 	};
-
+	const deleteChat = async () => {
+		try {
+			await axios.delete(`http://127.0.0.1:5000/chat/deletechat/${chatId}`);
+			toast.success("Successfully deleted", {
+				autoClose: 1000,
+				position: "top-center",
+			});
+			SetChatHistory((prv) => prv.filter((chat) => chat._id !== chatId));
+		} catch (error) {
+			toast.error("Oops! Something Went wrong", {
+				autoClose: 1000,
+				position: "top-center",
+			});
+		}
+	};
 	const insertChat = async () => {
 		if (message) {
 			setFiles({});
 		}
 		try {
-			console.log(message);
 			const foramtData = new FormData();
 			if (message.length > 0) {
 				foramtData.append("message", message);
@@ -112,16 +145,19 @@ function ChatUi() {
 			setMessage("");
 			setImagePreview("");
 		} catch (error) {
-			console.log(error);
+			throw error;
 		}
 	};
+	useEffect(() => {
+		queryClient.invalidateQueries({ queryKey: ["friends"] });
+	}, [chatHistory, queryClient]);
 	// function to Add and Remove Friend
 	const addFriendAndRemoveFriend = async (userid, friendid) => {
 		try {
 			const data = await axios.post(`addorremovefriend/${userid}/${friendid}`);
 			return data;
 		} catch (error) {
-			console.log(error);
+			throw error;
 		}
 	};
 	// function to get user friend
@@ -129,10 +165,9 @@ function ChatUi() {
 		const [, userid] = queryKey;
 		try {
 			const { data } = await axios.get(`userfriend/${userid}`);
-			console.log(data);
 			return data;
 		} catch (error) {
-			console.log(error);
+			throw error;
 		}
 	};
 	// using React query to fetch
@@ -142,16 +177,30 @@ function ChatUi() {
 	});
 	// function to select specifc user to chat
 	const selectFriend = (id) => {
+		console.log(id);
+		console.log(onLineUser);
 		const dataFilterd = data.filter((user) => user._id === id);
 		setReciverId(dataFilterd[0]._id);
 		SetSelectdFriedn(dataFilterd);
+		const IsUserInList = onLineUser.filter((userid) => {
+			return userid === id;
+		});
+		if (IsUserInList.length > 0) {
+			setIsOnline(true);
+		} else {
+			setIsOnline(false);
+		}
 	};
 	useEffect(() => {
 		const handleResize = () => {
 			if (window.innerWidth > 640) {
 				setShowChatPage(false);
-			} else {
-				setShowChatPage(true);
+				setShowAddUser(false);
+			}
+			if (window.innerWidth < 640) {
+				if (isClicked) {
+					setShowChatPage(true);
+				}
 			}
 		};
 
@@ -162,7 +211,7 @@ function ChatUi() {
 		return () => {
 			window.removeEventListener("resize", handleResize);
 		};
-	}, []);
+	}, [isClicked]);
 	return (
 		<div className="bg-slate-900 h-screen sm:grid grid-cols-4">
 			{!showAddUser && !showChatPageSm && (
@@ -198,9 +247,6 @@ function ChatUi() {
 								}}
 							/>
 						</div>
-						{/* <div>
-						<IoSearch className="text-3xl text-slate-300" />
-					   </div> */}
 					</div>
 					<Frinds
 						data={data}
@@ -211,6 +257,7 @@ function ChatUi() {
 						setShowChatPage={setShowChatPage}
 						lastMessage={lastMessage}
 						message={message}
+						setIsClicked={setIsClicked}
 					/>
 				</div>
 			)}
@@ -219,11 +266,31 @@ function ChatUi() {
 				<AddUser
 					showAddUser={showAddUser}
 					setShowAddUser={setShowAddUser}
-					// addRemoviFreindMutaion={addRemoviFreindMutaion}
 					addFriendAndRemoveFriend={addFriendAndRemoveFriend}
 				/>
 			)}
-
+			{showModal && (
+				<div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-slate-800 bg-opacity-40">
+					<div className="text-blackBlue bg-orange-100 p-5 rounded-lg">
+						<p>Do You Wante To Delete This Messege</p>
+						<div className="flex justify-around pt-6">
+							<button
+								className="bg-red-500 px-3 py-1 rounded-lg"
+								onClick={() => {
+									deleteChat();
+									setShowModal(false);
+								}}>
+								Yes
+							</button>{" "}
+							<button
+								className="bg-green-500 px-3 py-1 rounded-lg"
+								onClick={() => setShowModal(!showModal)}>
+								No
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 			{showChatPageSm && (
 				<ChatUiSm
 					showChatPageSm={showChatPageSm}
@@ -234,6 +301,9 @@ function ChatUi() {
 					setMessage={setMessage}
 					message={message}
 					insertChat={insertChat}
+					showModal={showModal}
+					setShowModal={setShowModal}
+					setChatId={setChatId}
 				/>
 			)}
 
@@ -256,7 +326,7 @@ function ChatUi() {
 						</p>
 						<p className="mt-[13px] text-slate-300 ml-3 font-thin text-xs">
 							{selectedFriend.length > 0
-								? selectedFriend[0].isOnline
+								? isOnline
 									? "online"
 									: "offline"
 								: ""}
@@ -278,40 +348,78 @@ function ChatUi() {
 					message={message}
 					insertChat={insertChat}
 					handleFile={handleFile}
+					showModal={showModal}
+					setShowModal={setShowModal}
+					setChatId={setChatId}
 				/>
 			</div>
 			{imagePreview && (
 				<div className="fixed right-0 left-0 top-0 bottom-0">
 					<div className="  fixed w-[70vw]  sm:w-[50vw]  lg:w-[400px]  left-0 right-0  top-16 bg-slate-800   p-5 rounded-xl mx-auto ">
-						<img
-							src={imagePreview}
-							alt="hello"
-							className="max-w-full  max-h-[50vh] object-contain mb-2 rounded-2xl"
-						/>
-						<input type="checkbox" id="check" />{" "}
-						<label htmlFor="check" className="text-orange-200">
-							{" "}
-							Add Caption
-						</label>
-						<input
-							autoFocus
-							onChange={(e) => setCaption(e.target.value)}
-							type="text"
-							value={caption}
-							placeholder="write caption"
-							className="bg-slate-800  mb-2 w-full  border-transparent outline-none px-1  py-2 text-slate-100 font-thin border-b border-slate-300 "
-						/>
-						<div className="flex justify-start">
-							<button
-								className="text-orange-100 bg-green-800 py-1 px-2 rounded-lg "
-								onClick={insertChat}>
-								send{" "}
-							</button>
-							<button
-								className="text-orange-100 bg-red-400 py-1 px-2 rounded-lg ml-3"
-								onClick={() => setImagePreview(null)}>
-								Cancel{" "}
-							</button>
+						<div className=" relative">
+							{picker && (
+								<div className=" absolute bottom-16 -right-20  ">
+									<EmojiPicker
+										theme="dark"
+										height={220}
+										style={{
+											backgroundColor: "#0F172A",
+											width: "80%",
+										}}
+										onEmojiClick={onEmojiClick}
+										previewConfig={{
+											showPreview: false,
+										}}
+									/>
+								</div>
+							)}
+							<img
+								src={imagePreview}
+								alt="hello"
+								className="max-w-full  max-h-[50vh] object-contain mb-2 rounded-2xl"
+							/>
+							<input
+								type="checkbox"
+								id="check"
+								checked={iSchecked}
+								onChange={() => setIsChecked(!iSchecked)}
+							/>{" "}
+							<label htmlFor="check" className="text-orange-200">
+								{" "}
+								Add Caption
+							</label>
+							{iSchecked && (
+								<div className="flex items-center">
+									<input
+										autoFocus
+										onChange={(e) => setCaption(e.target.value)}
+										type="text"
+										value={caption}
+										placeholder="write caption"
+										className="bg-slate-700  mb-2 w-full   rounded-xl border-transparent outline-none px-1  py-2 text-slate-100 font-thin border-b border-slate-300 "
+									/>
+									<button
+										className="text-2xl  text-orange-100 -ml-8 "
+										onClick={() => setPicker(!picker)}>
+										<MdOutlineEmojiEmotions />
+									</button>
+								</div>
+							)}
+							<div
+								className={`flex justify-start ${
+									!iSchecked ? "mt-3" : "mt-0"
+								}`}>
+								<button
+									className="text-orange-100 bg-green-800 py-1 px-2 rounded-lg "
+									onClick={insertChat}>
+									send{" "}
+								</button>
+								<button
+									className="text-orange-100 bg-red-400 py-1 px-2 rounded-lg ml-3"
+									onClick={() => setImagePreview(null)}>
+									Cancel{" "}
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>

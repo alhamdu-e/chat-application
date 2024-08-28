@@ -44,36 +44,6 @@ body {
 	background-clip: border-box;
 }
 
-.roboto-li {
-	font-family: "Roboto", sans-serif;
-	font-weight: 300;
-	font-style: normal;
-}
-
-.roboto-r {
-	font-family: "Roboto", sans-serif;
-	font-weight: 400;
-	font-style: normal;
-}
-
-.roboto-m {
-	font-family: "Roboto", sans-serif;
-	font-weight: 500;
-	font-style: normal;
-}
-
-.roboto-l {
-	font-family: "Roboto", sans-serif;
-	font-weight: 700;
-	font-style: normal;
-}
-
-.roboto-ex {
-	font-family: "Roboto";
-	font-weight: 900;
-	font-style: normal;
-}
-
 .rubik-li {
 	font-family: "Rubik", sans-serif;
 	font-optical-sizing: auto;
@@ -108,46 +78,6 @@ body {
 
 .rubik-ex {
 	font-family: "Rubik";
-	font-optical-sizing: auto;
-
-	font-weight: 900;
-	font-style: normal;
-}
-
-.inter-li {
-	font-family: "Inter", sans-serif;
-	font-optical-sizing: auto;
-
-	font-weight: 300;
-	font-style: normal;
-}
-
-.inter-r {
-	font-family: "Inter", sans-serif;
-	font-optical-sizing: auto;
-
-	font-weight: 400;
-	font-style: normal;
-}
-
-.inter-m {
-	font-family: "Inter", sans-serif;
-	font-optical-sizing: auto;
-
-	font-weight: 500;
-	font-style: normal;
-}
-
-.inter-l {
-	font-family: "Inter", sans-serif;
-	font-optical-sizing: auto;
-
-	font-weight: 700;
-	font-style: normal;
-}
-
-.inter-ex {
-	font-family: "Inter";
 	font-optical-sizing: auto;
 
 	font-weight: 900;

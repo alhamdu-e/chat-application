@@ -33,7 +33,6 @@ function App() {
 								<FeatureSEction />
 								<ToAction />
 								<Testomoni />
-
 								<Footer />
 							</div>
 						}></Route>
@@ -42,7 +41,7 @@ function App() {
 					<Route path="register" element={<Register />}></Route>
 				</Routes>
 			</BrowserRouter>
-			<ToastContainer />
+			<ToastContainer limit={2} pauseOnFocusLoss={false} />
 		</QueryClientProvider>
 	);
 }

@@ -10,7 +10,7 @@ function Footer() {
 			className="bg-slate-900 pb-4 pt-40"
 			style={{
 				clipPath:
-					"polygon(0 30%, 100% 4%, 100% 16%, 100% 98%, 25% 100%, 0 100%, 0 0)",
+					"polygon(72% 6%, 100% 23%, 100% 60%, 100% 100%, 0 100%, 0 25%, 26% 6%)",
 			}}>
 			<div className="bg-slate-900  pt-10 pb-10  pl-10 pr-10 grid sm:grid-cols-2 sm:pl-0 ">
 				<div className="text-sm font-thin text-gray-300 flex justify-evenly mb-7  ">
@@ -37,7 +37,7 @@ function Footer() {
 				<div className="flex flex-col sm:flex-row sm:ml-5  md:justify-between lg:justify-around ">
 					<input
 						type="email"
-						className="border-none focus:border-none bg-gray-400 outline-none  outline-offset-0  rounded-md mb-5 py-2 sm:w-full "
+						className="border-none focus:border-none bg-orange-100 outline-none  outline-offset-0  rounded-md mb-5 py-2 sm:w-full "
 						style={{ boxShadow: "0 0 0 0.4rem rgba(253, 249, 233, 0.5)" }}
 					/>
 					<button className="bg-slate-400 rounded-xl py-2 sm:px-3 sm:py-[13px] sm:ml-6 lg:px-5   sm:-mt-2 sm:self-center">

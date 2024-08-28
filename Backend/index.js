@@ -21,21 +21,45 @@ app.use("/chat", chatRoutes);
 
 databaseconnection()
 	.then((result) => {
+		// Start the server
 		const server = app.listen(5000, () => {
 			console.log("server started");
 		});
+
+		// Initialize Socket.IO
 		const io = require("./socket.js").init(server);
+
+		// Store online users
+		const onlineUsers = {};
+
 		io.on("connection", (socket) => {
-			console.log("client connected");
-			// Handle joining a room
+			console.log("A client connected");
+
+			// When a user joins a room
 			socket.on("joinRoom", (userId) => {
+				// Add user to the online list
 				socket.join(userId);
+				onlineUsers[userId] = socket.id;
 				console.log(`${userId} joined room`);
+
+				// Notify others that this user is online
+				io.emit("userOnline", { userId });
 			});
 
-			// Handle disconnection
+			// When a user disconnects
 			socket.on("disconnect", () => {
-				console.log("Client disconnected:");
+				// Find the user that disconnected
+				for (let userId in onlineUsers) {
+					if (onlineUsers[userId] === socket.id) {
+						// Remove them from the online list
+						delete onlineUsers[userId];
+
+						// Notify others that this user is offline
+						io.emit("userOffline", { userId });
+						break;
+					}
+				}
+				console.log("Client disconnected");
 			});
 		});
 	})

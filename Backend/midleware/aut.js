@@ -4,7 +4,6 @@ export const verifyToken = async (req, res, next) => {
 	try {
 		console.log(req.header);
 		let token = req.header("Authorization");
-		console.log(token);
 
 		if (!token) {
 			return res.status(403).send("Access Denied");
@@ -14,8 +13,7 @@ export const verifyToken = async (req, res, next) => {
 			token = token.slice(7, token.length).trimLeft();
 		}
 
-		const verified = jwt.verify(token, process.env.JWT_SECRET);
-		console.log(verified);
+		const verified = jwt.verify(token, process.env.JWT_SECRECT);
 		req.user = verified;
 		next();
 	} catch (err) {

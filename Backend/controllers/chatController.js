@@ -8,7 +8,6 @@ const insertChat = async (req, res) => {
 	let message = "";
 	let isImage = true;
 	let caption = "";
-	console.log(req.file);
 	if (req.file) {
 		message = "http://127.0.0.1:5000/images/" + req.file.filename;
 		chatInfo.message = message;
@@ -21,8 +20,6 @@ const insertChat = async (req, res) => {
 		chatInfo.message = message;
 		chatInfo.isImage = false;
 	}
-	console.log(caption);
-	console.log(senderId, receiverId, message);
 	try {
 		const chat = new Chat(chatInfo);
 
@@ -36,6 +33,7 @@ const insertChat = async (req, res) => {
 			recipient: receiverId,
 			isImage: isImage,
 			caption: caption,
+			createdAt: new Date(),
 		});
 
 		// Optionally emit the message to the sender (for confirmation)
@@ -45,26 +43,33 @@ const insertChat = async (req, res) => {
 			recipient: receiverId,
 			isImage: isImage,
 			caption: caption,
+			createdAt: new Date(),
 		});
 
 		res.status(201).json({ message: "chat created succesfully" });
 	} catch (err) {
-		console.log(err);
+		res.status(500).json({ message: "crating chat history failed" });
 	}
 };
-
+const deleteChat = async (req, res) => {
+	const chatID = req.params.chatID;
+	try {
+		const deleted = await Chat.findByIdAndDelete(chatID);
+		return res.status(200).json({ message: "chat Deleted" });
+	} catch (err) {
+		res.status(500).json({ message: "Error deleting chat history " });
+	}
+};
 const getUsersWithLastMessage = async (req, res) => {
 	const { userId } = req.query;
 
 	try {
-		// Step 1: Fetch the current user and their friends
-		const user = await User.findById(userId).populate("friends"); // Assuming `friends` is an array of user IDs
+		const user = await User.findById(userId).populate("friends");
 
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });
 		}
 
-		// Step 2: For each friend, fetch their last message with the current user
 		const friendsWithLastMessage = await Promise.all(
 			user.friends.map(async (friend) => {
 				const lastMessage = await Chat.findOne({
@@ -72,27 +77,25 @@ const getUsersWithLastMessage = async (req, res) => {
 						{ sender: userId, recipient: friend._id },
 						{ sender: friend._id, recipient: userId },
 					],
-				}).sort({ createdAt: -1 }); // Sort by createdAt to get the latest message
+				}).sort({ createdAt: -1 });
 
 				return {
 					friendId: friend._id,
 					friendName: friend.fullName,
+					isImage: lastMessage ? lastMessage.isImage : false,
 					lastMessage: lastMessage ? lastMessage.message : "No messages yet",
 					lastMessageTime: lastMessage ? lastMessage.createdAt : null,
 				};
 			})
 		);
-
 		return res.status(200).json(friendsWithLastMessage);
 	} catch (error) {
-		console.error(error);
 		return res.status(500).json({ error: "Internal Server Error" });
 	}
 };
 
 const getChatHistory = async (req, res) => {
 	const { userId, freindId } = req.query;
-	console.log(userId, freindId);
 	try {
 		const chatHistory = await Chat.find({
 			$or: [
@@ -106,12 +109,15 @@ const getChatHistory = async (req, res) => {
 				},
 			],
 		});
-		console.log(chatHistory, "chat");
 		res.status(200).json(chatHistory);
 	} catch (err) {
-		console.log(err);
 		res.status(500).json({ message: "Fetching chat history failed" });
 	}
 };
 
-module.exports = { insertChat, getChatHistory, getUsersWithLastMessage };
+module.exports = {
+	insertChat,
+	getChatHistory,
+	getUsersWithLastMessage,
+	deleteChat,
+};

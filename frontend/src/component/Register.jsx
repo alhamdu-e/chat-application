@@ -8,14 +8,13 @@ import { IoEyeOff } from "react-icons/io5";
 import { onSubmit } from "./RegisterFormHandler";
 function Register() {
 	const { register, handleSubmit, formState, getValues, setValue } = useForm();
-	const { errors } = formState;
+	const { errors, isSubmitting } = formState;
 	const inputRef = useRef(null);
 	const [fileName, setFileName] = useState("Choose file");
 	const navigate = useNavigate();
 	const [showPAssword, setShowPassword] = useState(false);
 
 	const openfile = () => {
-		// Ensure inputRef.current is not null before triggering click
 		if (inputRef.current) {
 			inputRef.current.click();
 		}
@@ -177,9 +176,47 @@ function Register() {
 
 							{/* Submit Button */}
 							<button
+								disabled={isSubmitting}
 								type="submit"
-								className="w-full text-white bg-slate-600 hover:bg-slate-700 font-medium rounded-lg text-sm px-5 py-2 text-center">
-								Create an account
+								className={` ${
+									isSubmitting ? "cursor-not-allowed" : ""
+								}     w-full text-white bg-slate-600 hover:bg-slate-700 font-medium rounded-lg text-sm px-5 py-2 text-center`}>
+								{isSubmitting ? (
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 100 100"
+										preserveAspectRatio="xMidYMid"
+										width="30"
+										height="30"
+										style={{
+											display: "block",
+											backgroundColor: "transparent",
+											shapeRendering: "auto",
+											marginLeft: "150px",
+										}}>
+										<g>
+											<circle
+												strokeDasharray="164.93361431346415 56.97787143782138"
+												r="35"
+												strokeWidth="10"
+												stroke="#e8d6d7"
+												fill="none"
+												cy="50"
+												cx="50">
+												<animateTransform
+													attributeName="transform"
+													type="rotate"
+													values="0 50 50;360 50 50"
+													keyTimes="0;1"
+													dur="1s"
+													repeatCount="indefinite"
+												/>
+											</circle>
+										</g>
+									</svg>
+								) : (
+									"Create an Account"
+								)}
 							</button>
 
 							<p className="text-sm text-gray-300 font-thin dark:text-gray-400">
